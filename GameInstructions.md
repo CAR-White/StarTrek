@@ -1,6 +1,4 @@
-Enter file contents her
-Star Trek Version 1.00b Instructions.
-------------------------------------- 
+#Star Trek Version Instructions.
 
 The object off the game is to kill all of the Klingons in the 
 universe. The Klingons are represented by the character K, the 
