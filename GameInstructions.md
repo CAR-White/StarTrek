@@ -1,4 +1,4 @@
-#Star Trek Version Instructions.
+#Star Trek Instructions.
 
 The object off the game is to kill all of the Klingons in the 
 universe. The Klingons are represented by the character K, the 
