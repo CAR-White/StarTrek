@@ -44,6 +44,16 @@ starDate = 1000
 
 # Functions
 
+# Clear screen
+def clears():
+    for i in range(60):
+        print("")
+
+# Print lines
+def lines(nl):
+    for i in range(nl):
+        print("")
+
 # Return a random number between 0 and 100
 def rand_100():
     return random.randint(0,100)
@@ -127,10 +137,10 @@ def strpt():
 
 
 
-# Introduction
+# Game introduction
 def intro():
     clears()
-    lines(7)
+    lines(8)
     print("\t\t\t * * * * * * * * * * *  *")
     print("\t\t\t *    **************    *")
     print("\t\t\t *    * STAR TRECK *    *")
@@ -144,15 +154,7 @@ def intro():
     print("Type <RETURN> to continue");
     input()
 
-# Clear screen
-def clears():           
-    for i in range(8):
-        print("")
 
-# Print lines        
-def lines(l):
-    for i in range(l):
-        print("")
 
 # ********************************************************************************
 #                                 Main Program
@@ -165,7 +167,7 @@ def lines(l):
 #First initilise the universe so each co-ordinate is empty (-)
 Universe = [["-" for x in range(universeSize)] for y in range(universeSize)]
 
-#Populate the universe with Klingons, space stations and work holes
+#Populate the universe with Klingons, space stations and worm holes
 for ux in range(0, universeSize):
     for uy in range(0, universeSize):
         if rand_100() < Kprob:
@@ -183,8 +185,16 @@ for ux in range(0, universeSize):
 # be closer to the edge by less than one short range scan.
 ex = random.randint(srsRange, universeSize-srsRange)
 ey = random.randint(srsRange, universeSize-srsRange)
+
+# decrement K/S count in case the Enterprise removes one
+if Universe[ex][ey] == "K":
+    K_inUniverse -= 1
+if Universe[ex][ey] == "S":
+    S_inUniverse -= 1
+
 Universe[ex][ey] = "E"
 
+# max_starDate is more comples than this. See original C code
 max_starDate = K_inUniverse * 18
 max_energy = (4 * universeSize)
 energy = max_energy;
@@ -200,21 +210,64 @@ while command != "ex":
     if (starDate > max_starDate):
         clears()
         print("\nYou have run out of time. Current star date is: " + str(starDate))
-        print("You should have been finished by: " + str(max_starDate))    
+        print("You should have been finished by: " + str(max_starDate))
         break
 
     if (energy <= 0):
         clears()
         print("\nNo energy available")
         break
-        
-    print("Commands: srs, lrs, imp, wrp, wrq, sq, phr, pht, es, ep, str, help, ins, rep, ex.");
+
+    print("Commands: srs, lrs, imp, wrp, wrq, sq, phr, pht, es, ep, str, ins, rep, help, ex.");
     command=input("Input command: ")
+    if command=="srs":
+        clears()
+    elif command=="lrs":
+        clears()
+    elif command=="imp":
+        pd=input("Input [Power(1-3)][Direction(1-8)]: ")
+        impulsePower=int(pd[0])
+        impulseDirection=int(pd[1])
+        #print("PD = " + str(p) + str(d))
+        starDate = starDate + impulsePower
+    elif command=="wrp":
+        pd=input("Input [Power(0-9)][Direction(1-8)]: ")
+        warpPower=int(pd[0])
+        warpDirection=int(pd[1])
+        starDate = starDate + 1
+
+    else:
+        clears()
+        print("srs    	- Short Range Scan.")
+        print("lrs    	- Long Range Scan.")
+        print("imp 	- Impulse Power.")
+        print("wrp	- Warp Power ( 2 for one sector move, 0 = hyoperspace ).")
+        print("wrq	- Warp to saved quadrant.")
+        print("sq	- Save Quadrant.")
+        print("phr	- Phasers.")
+        print("pht	- Photon Torpedoes.")
+        print("es	- Energise Shields ( Max 100 ).")
+        print("ep	- Energise Phasers ( Max 100 ).")
+        print("str    	- Status Report.")
+        print("sq	- Save Quadrant.")
+        print("save	- Save game (note: only one game can be saved).")
+        print("load	- Load game.")
+        print("help   	- Help.")
+        print("ins	- Print full instructions.")
+        print("ex     	- End Game.\n")
+        print("A 0 used in any command parameter (except Warp power 0 which")
+        print("represents Warp Factor 10) results in the command being aborted")
+        lines(1)
+
+
+
 
 print("Gane Over")
 
 
-              
-              
+
+
+
+
 
 
