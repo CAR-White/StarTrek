@@ -11,9 +11,9 @@ import random
 
 # Game parametrs (constants:- should not be programtiacally modified)
 universeSize = 60           # Universe size is a square (60)
-Kprob=15                    # Probability of Universe cord having a Klingon (20)
-Sprob=8                     # Probability of Universe cord having a space station (8)
-Wprob=5                     # Probability of Universe cord having a worm hole (5)
+Kprob=6                    # Probability of Universe cord having a Klingon (20)
+Sprob=3                     # Probability of Universe cord having a space station (8)
+Wprob=1                     # Probability of Universe cord having a worm hole (5)
 srsRange = 3                # Short range scan range
 
 # Variable initilisation
@@ -21,9 +21,9 @@ K_inUniverse = 0;           # Number of Klingons in universe
 S_inUniverse = 0;	    # Space Stations in universe
 
 # Global variables
-global K_inSector
-global S_inSector
-global W_inSector
+#global K_inSector
+#global S_inSector
+#global W_inSector
 
 global srsFlag
 srsFlag = 1
@@ -42,17 +42,21 @@ impulseFlag = 1
 global starDate
 starDate = 1000
 
+global energy
+
 # Functions
 
 # Clear screen
 def clears():
     for i in range(60):
         print("")
+    return
 
 # Print lines
 def lines(nl):
     for i in range(nl):
         print("")
+    return
 
 # Return a random number between 0 and 100
 def rand_100():
@@ -61,9 +65,6 @@ def rand_100():
 # Short range scan with no print to get sector stats simular to srs but no display
 # ssx, ssy :- Short Range Scan cords
 def srs_noprint():
-    global K_inSector
-    global S_inSector
-    global W_inSector
     K_inSector = 0;
     S_inSector = 0;
     W_inSector = 0;
@@ -78,7 +79,47 @@ def srs_noprint():
                     S_inSector +=1
                 elif (Universe[ssx][ssy] == "W"):
                     W_inSector +=1
+    return
 
+# Short range scan 
+# ssx, ssy :- Short Range Scan cords
+def srs():
+    K_inSector = 0;
+    S_inSector = 0;
+    W_inSector = 0;
+    global energy
+    energy -=1
+
+    if srsFlag <=0:
+        clears()
+        print("Short Range Scan not available")
+        return
+    else:
+        print(" "*12 + "8" + " "*(srsRange+3) + "  1" + " "*(srsRange+3) + "  2")
+        for ssx in range(ex-srsRange, ex+srsRange+1):
+            if ssx==ex:
+                print(" "*12 + "7 ", end=" ")
+            else:
+                print(" "*14, end =" ")            
+    
+            for ssy in range(ey-srsRange, ey+srsRange+1):
+                if ssx<0 or ssx > universeSize-1:
+                    print("  ", end =" ")
+                elif ssy<0 or ssy > universeSize-1:
+                    print("  ", end =" ")
+                else:
+                    print(Universe[ssx][ssy], end=" ")
+                    if (Universe[ssx][ssy] == "K"):
+                        K_inSector +=1
+                    if (Universe[ssx][ssy] == "S"):
+                        S_inSector +=1
+                    if (Universe[ssx][ssy] == "W"):
+                        W_inSector +=1                 
+                if ssy==ey+srsRange and ssx==ex:
+                    print(" 3", end=" ")
+            print("")
+        print(" "*12 + "6" + " "*(srsRange+3) + "  5" + " "*(srsRange+3) + "  4")                             
+    return
 
 # Status report
 def strpt():
@@ -129,7 +170,7 @@ def strpt():
         print("Impulse power unavailable");
     print("")
 
-    print("Klingons in sector: " + str(K_inSector))
+    #print("Klingons in sector: " + str(K_inSector))
     #printf("Klingons in universe:  %3d\n", K_in_universe);
     #printf("Space Stations in universe: %3d\n\n", SS_in_universe);
     #printf("Saved Quadrants: Q0: K=%2d S=%2d W=%2d   Q1: K=%2d S=%2d W=%2d\n", ssK[0], ssS[0], ssW[0], ssK[1], ssS[1], ssW[1]);
@@ -217,11 +258,12 @@ while command != "ex":
         clears()
         print("\nNo energy available")
         break
-
+    
     print("Commands: srs, lrs, imp, wrp, wrq, sq, phr, pht, es, ep, str, ins, rep, help, ex.");
     command=input("Input command: ")
     if command=="srs":
         clears()
+        srs()
     elif command=="lrs":
         clears()
     elif command=="imp":
