@@ -2,7 +2,7 @@
 
 # To-do:
 # def ins()
-# max_starDate
+# max_Date
 # need to sort out issue when Enterprise is at edge of universe
 
 
@@ -11,9 +11,9 @@ import random
 
 # Game parametrs (constants:- should not be programtiacally modified)
 universeSize = 60           # Universe size is a square (60)
-Kprob=6                    # Probability of Universe cord having a Klingon (20)
-Sprob=3                     # Probability of Universe cord having a space station (8)
-Wprob=1                     # Probability of Universe cord having a worm hole (5)
+Kprob=65                    # Probability of Universe cord having a Klingon (20)
+Sprob=15                     # Probability of Universe cord having a space station (8)
+Wprob=5                     # Probability of Universe cord having a worm hole (5)
 srsRange = 3                # Short range scan range
 
 # Variable initilisation
@@ -59,8 +59,8 @@ def lines(nl):
     return
 
 # Return a random number between 0 and 100
-def rand_100():
-    return random.randint(0,100)
+def rand(n):
+    return random.randint(0,n)
 
 # Short range scan with no print to get sector stats simular to srs but no display
 # ssx, ssy :- Short Range Scan cords
@@ -135,6 +135,7 @@ def strpt():
 
     print("Status Report: STAR DATE: xxx. Life support systems available until: xxx")
     print("--------------------------------------------------------------------------")
+    print("Position: " + str(ex) +":" + str(ey))
     print("Energy:            ")
     print("Shields:           ")
     print("Phasers:           ")
@@ -211,13 +212,14 @@ Universe = [["-" for x in range(universeSize)] for y in range(universeSize)]
 #Populate the universe with Klingons, space stations and worm holes
 for ux in range(0, universeSize):
     for uy in range(0, universeSize):
-        if rand_100() < Kprob:
+        #ran = rand_100()
+        if rand(1000) < Kprob:
             Universe[ux][uy] = "K"
             K_inUniverse += 1
-        elif rand_100() < Sprob:
+        elif rand(1000) < Sprob:
             Universe[ux][uy] = "S"
             S_inUniverse += 1
-        elif rand_100() < Wprob:
+        elif rand(1000) < Wprob:
             Universe[ux][uy] = "W"
         #else:
         #    Universe[ux][uy] = "-"
