@@ -2,7 +2,7 @@
 
 # To-do:
 # def ins()
-# max_Date
+#_Date
 # need to sort out issue when Enterprise is at edge of universe
 
 
@@ -20,29 +20,17 @@ srsRange = 3                # Short range scan range
 K_inUniverse = 0;           # Number of Klingons in universe
 S_inUniverse = 0;	    # Space Stations in universe
 
-# Global variables
-#global K_inSector
-#global S_inSector
-#global W_inSector
-
-global srsFlag
+# Global variables initilisation
 srsFlag = 1
-global lrsFlag
 lrsFlag = 1
-global squadFlag
 squadFlag = 1
-global phaserFlag
 phaserFlag = 1
-global ptFlag
 ptFlag = 1
-global warpFlag
 warpFlag = 1
-global impulseFlag
 impulseFlag = 1
-global starDate
 starDate = 1000
+ex, ey = 0, 0
 
-global energy
 
 # Functions
 
@@ -65,6 +53,7 @@ def rand(n):
 # Short range scan with no print to get sector stats simular to srs but no display
 # ssx, ssy :- Short Range Scan cords
 def srs_noprint():
+    global ex, ey
     K_inSector = 0;
     S_inSector = 0;
     W_inSector = 0;
@@ -84,10 +73,10 @@ def srs_noprint():
 # Short range scan 
 # ssx, ssy :- Short Range Scan cords
 def srs():
+    global energy, ex, ey
     K_inSector = 0;
     S_inSector = 0;
     W_inSector = 0;
-    global energy
     energy -=1
 
     if srsFlag <=0:
@@ -95,6 +84,7 @@ def srs():
         print("Short Range Scan not available")
         return
     else:
+        clears()
         print(" "*12 + "8" + " "*(srsRange+3) + "  1" + " "*(srsRange+3) + "  2")
         for ssx in range(ex-srsRange, ex+srsRange+1):
             if ssx==ex:
@@ -121,6 +111,27 @@ def srs():
         print(" "*12 + "6" + " "*(srsRange+3) + "  5" + " "*(srsRange+3) + "  4")                             
     return
 
+def lrs():
+    global energy
+    if lrsFlag <= 0:
+        clears()
+        print("Long Range Scan unavilable.")
+        return
+    energy -= 3  
+    return
+
+def impulse(power, dir):
+    global ex, ey
+    Universe[ex][ey] = "-"
+    if dir == 1:
+        ex = ex - power
+        ey = ey
+        Universe[ex][ey] = "E"
+    return
+
+
+
+
 # Status report
 def strpt():
     global srsFlag
@@ -133,10 +144,10 @@ def strpt():
 
     srs_noprint()
 
-    print("Status Report: STAR DATE: xxx. Life support systems available until: xxx")
+    print("Status Report: STAR DATE: " + str(starDate) + ". Life support systems available until: " + str(max_starDate))
     print("--------------------------------------------------------------------------")
-    print("Position: " + str(ex) +":" + str(ey))
-    print("Energy:            ")
+    print("Position:          " + str(ex) +":" + str(ey))
+    print("Energy:            " + str(energy))
     print("Shields:           ")
     print("Phasers:           ")
     print("Photon torpedoes:  ")
@@ -172,11 +183,11 @@ def strpt():
     print("")
 
     #print("Klingons in sector: " + str(K_inSector))
-    #printf("Klingons in universe:  %3d\n", K_in_universe);
-    #printf("Space Stations in universe: %3d\n\n", SS_in_universe);
+    print("Klingons in universe: " + str(K_inUniverse))
+    print("Space Stations in universe: " + str(S_inUniverse))
     #printf("Saved Quadrants: Q0: K=%2d S=%2d W=%2d   Q1: K=%2d S=%2d W=%2d\n", ssK[0], ssS[0], ssW[0], ssK[1], ssS[1], ssW[1]);
     #printf("                 Q2: K=%2d S=%2d W=%2d   Q3: K=%2d S=%2d W=%2d\n\n", ssK[2], ssS[2], ssW[2], ssK[3], ssS[3], ssW[3]);
-
+    print("")
 
 
 # Game introduction
@@ -247,7 +258,7 @@ clears()
 #ins()
 strpt()
 
-command=""
+command=" "
 while command != "ex":
 
     if (starDate > max_starDate):
@@ -268,10 +279,12 @@ while command != "ex":
         srs()
     elif command=="lrs":
         clears()
+        lrs()
     elif command=="imp":
         pd=input("Input [Power(1-3)][Direction(1-8)]: ")
         impulsePower=int(pd[0])
         impulseDirection=int(pd[1])
+        impulse(impulsePower, impulseDirection)
         #print("PD = " + str(p) + str(d))
         starDate = starDate + impulsePower
     elif command=="wrp":
@@ -302,6 +315,7 @@ while command != "ex":
         print("A 0 used in any command parameter (except Warp power 0 which")
         print("represents Warp Factor 10) results in the command being aborted")
         lines(1)
+
 
 
 
