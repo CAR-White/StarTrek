@@ -120,13 +120,55 @@ def lrs():
     energy -= 3  
     return
 
-def impulse(power, dir):
+def impulse(direction, power):
     global ex, ey
+    global K_inUniverse
+
     Universe[ex][ey] = "-"
-    if dir == 1:
-        ex = ex - power
-        ey = ey
-        Universe[ex][ey] = "E"
+    eOx = ex    # Store original position of Enterprise, so we can return if necessary
+    eOy = ey
+    if (direction < 1 or direction > 8):
+        print("Direction value out of range")
+    elif  (power < 1 or power > 3):
+        print("Power value out of range")
+    else:    
+        if direction == 1:
+            ex = ex - power
+            ey = ey
+        elif direction == 2:
+            ex = ex - power
+            ey = ey + power
+        elif direction == 3:
+            ex = ex
+            ey = ey + power
+        elif direction == 4:
+            ex = ex + power
+            ey = ey + power
+        elif direction == 5:
+            ex = ex + power
+            ey = ey
+        elif direction == 6:
+            ex = ex + power
+            ey = ey - power
+        elif direction == 7:
+            ex = ex
+            ey = ey - power
+        elif direction == 8:
+            ex = ex - power
+            ey = ey - power       
+        else:
+            #Should never get here
+            print("Toto, this shue aint Kansus")
+            
+    if Universe[ex][ey] == "K":
+        print("You have collided with a Klingon and suffered damage")
+        K_inUniverse -= 1
+        # To-do: Add damage
+        
+        
+
+    
+    Universe[ex][ey] = "E"
     return
 
 
@@ -239,6 +281,8 @@ for ux in range(0, universeSize):
 # be closer to the edge by less than one short range scan.
 ex = random.randint(srsRange, universeSize-srsRange)
 ey = random.randint(srsRange, universeSize-srsRange)
+#ex = 0
+#ey = 0
 
 # decrement K/S count in case the Enterprise removes one
 if Universe[ex][ey] == "K":
@@ -281,7 +325,7 @@ while command != "ex":
         clears()
         lrs()
     elif command=="imp":
-        pd=input("Input [Power(1-3)][Direction(1-8)]: ")
+        pd=input("Input [[Direction(1-8)][Power(1-3)]: ")
         impulsePower=int(pd[0])
         impulseDirection=int(pd[1])
         impulse(impulsePower, impulseDirection)
