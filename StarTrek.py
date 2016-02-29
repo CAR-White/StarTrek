@@ -13,7 +13,7 @@ import time
 # Game parametrs (constants:- should not be programtiacally modified)
 universeSize = 60           # Universe size is a square (60)
 Kprob=65                    # Probability of Universe cord having a Klingon (20)
-Sprob=15                     # Probability of Universe cord having a space station (8)
+Sprob=15                    # Probability of Universe cord having a space station (8)
 Wprob=5                     # Probability of Universe cord having a worm hole (5)
 srsRange = 3                # Short range scan range
 
@@ -57,7 +57,7 @@ def energiseAnotation():
         print(".", end="")
         time.sleep(0.25)
         i +=i
-    time.sleep(1)
+    time.sleep(2)
 
 # Return a random number between 0 and 100
 def rand(n):
@@ -365,18 +365,36 @@ while command != "ex":
         e = int(input())
         energy = energy - e
         shieldEnergy = shieldEnergy + e
+        print("Energising shields ", end="")
         energiseAnotation()
-        #time.sleep(2)
         if shieldEnergy > 99:
             energy = energy + shieldEnergy - 99
             shieldEnergy = 99
-            clears()
-            print("Shields fully energied")
-        print("")
-        print("Shield energised to " + str(shieldEnergy))
-        time.sleep(2)
+            print(" Shields fully energied")
+        else:
+            print("Shield energised to " + str(shieldEnergy))
+        time.sleep(2.5)
         clears()
         strpt()
+    elif command == "ep":
+        print("Input Energy: ", end = "")
+        e = int(input())
+        energy = energy - e
+        phaserEnergy = phaserEnergy + e
+        print("Energising phasers ", end="")
+        energiseAnotation()
+        if phaserEnergy > 50:
+            energy = energy + phaserEnergy - 50
+            phaserEnergy = 50
+            print(" Phasers fully energied")
+        else:
+            print("Phasers energised to " + str(phaserEnergy))
+        time.sleep(2.5)
+        clears()
+        strpt()
+
+
+
 
     else:
         clears()
