@@ -8,6 +8,7 @@
 
 #Modules
 import random
+import time
 
 # Game parametrs (constants:- should not be programtiacally modified)
 universeSize = 60           # Universe size is a square (60)
@@ -21,6 +22,8 @@ K_inUniverse = 0;           # Number of Klingons in universe
 S_inUniverse = 0;	    # Space Stations in universe
 
 # Global variables initilisation
+
+# Initial status flags
 srsFlag = 1
 lrsFlag = 1
 squadFlag = 1
@@ -28,8 +31,11 @@ phaserFlag = 1
 ptFlag = 1
 warpFlag = 1
 impulseFlag = 1
+
+
 starDate = 1000
-ex, ey = 0, 0
+shieldEnergy = 0                  # Maximum = 99
+phaserEnergy = 0                  # Maxumul = 50
 
 
 # Functions
@@ -45,6 +51,13 @@ def lines(nl):
     for i in range(nl):
         print("")
     return
+
+def energiseAnotation():
+    for i in range(10):
+        print(".", end="")
+        time.sleep(0.25)
+        i +=i
+    time.sleep(1)
 
 # Return a random number between 0 and 100
 def rand(n):
@@ -70,7 +83,7 @@ def srs_noprint():
                     W_inSector +=1
     return
 
-# Short range scan 
+# Short range scan
 # ssx, ssy :- Short Range Scan cords
 def srs():
     global energy, ex, ey
@@ -90,8 +103,8 @@ def srs():
             if ssx==ex:
                 print(" "*12 + "7 ", end=" ")
             else:
-                print(" "*14, end =" ")            
-    
+                print(" "*14, end =" ")
+
             for ssy in range(ey-srsRange, ey+srsRange+1):
                 if ssx<0 or ssx > universeSize-1:
                     print("  ", end =" ")
@@ -104,11 +117,11 @@ def srs():
                     if (Universe[ssx][ssy] == "S"):
                         S_inSector +=1
                     if (Universe[ssx][ssy] == "W"):
-                        W_inSector +=1                 
+                        W_inSector +=1
                 if ssy==ey+srsRange and ssx==ex:
                     print(" 3", end=" ")
             print("")
-        print(" "*12 + "6" + " "*(srsRange+3) + "  5" + " "*(srsRange+3) + "  4")                             
+        print(" "*12 + "6" + " "*(srsRange+3) + "  5" + " "*(srsRange+3) + "  4")
     return
 
 def lrs():
@@ -117,7 +130,7 @@ def lrs():
         clears()
         print("Long Range Scan unavilable.")
         return
-    energy -= 3  
+    energy -= 3
     return
 
 def impulse(direction, power):
@@ -131,7 +144,7 @@ def impulse(direction, power):
         print("Direction value out of range")
     elif  (power < 1 or power > 3):
         print("Power value out of range")
-    else:    
+    else:
         if direction == 1:
             ex = ex - power
             ey = ey
@@ -155,21 +168,21 @@ def impulse(direction, power):
             ey = ey - power
         elif direction == 8:
             ex = ex - power
-            ey = ey - power       
+            ey = ey - power
         else:
             #Should never get here
             print("Toto, this shue aint Kansus")
-            
+
     if Universe[ex][ey] == "K":
         print("You have collided with a Klingon and suffered damage")
         K_inUniverse -= 1
         # To-do: Add damage
-        
-        
 
-    
+
+
+
     Universe[ex][ey] = "E"
-    return
+    #return
 
 
 
@@ -183,6 +196,8 @@ def strpt():
     global ptFlag
     global warpFlag
     global impulseFlag
+    global shieldEnergy
+    global phaserEnergy
 
     srs_noprint()
 
@@ -190,9 +205,9 @@ def strpt():
     print("--------------------------------------------------------------------------")
     print("Position:          " + str(ex) +":" + str(ey))
     print("Energy:            " + str(energy))
-    print("Shields:           ")
-    print("Phasers:           ")
-    print("Photon torpedoes:  ")
+    print("Shields:           " + str(shieldEnergy))
+    print("Phasers:           " + str(phaserEnergy))
+    print("Photon torpedoes:  " + str(pt))
 
     if (srsFlag > 0):
         print("SRS operational")
@@ -292,10 +307,16 @@ if Universe[ex][ey] == "S":
 
 Universe[ex][ey] = "E"
 
-# max_starDate is more comples than this. See original C code
+# max_energy is more comples than this. See original C code
 max_starDate = K_inUniverse * 18
+
+max_pt = int(K_inUniverse/15)
+pt = max_pt
+
 max_energy = (4 * universeSize)
-energy = max_energy;
+energy = max_energy
+
+canDockDate = starDate
 
 intro()
 clears()
@@ -315,7 +336,7 @@ while command != "ex":
         clears()
         print("\nNo energy available")
         break
-    
+
     print("Commands: srs, lrs, imp, wrp, wrq, sq, phr, pht, es, ep, str, ins, rep, help, ex.");
     command=input("Input command: ")
     if command=="srs":
@@ -336,6 +357,26 @@ while command != "ex":
         warpPower=int(pd[0])
         warpDirection=int(pd[1])
         starDate = starDate + 1
+    elif command=="str":
+        clears()
+        strpt()
+    elif command == "es":
+        print("Input Energy: ", end = "")
+        e = int(input())
+        energy = energy - e
+        shieldEnergy = shieldEnergy + e
+        energiseAnotation()
+        #time.sleep(2)
+        if shieldEnergy > 99:
+            energy = energy + shieldEnergy - 99
+            shieldEnergy = 99
+            clears()
+            print("Shields fully energied")
+        print("")
+        print("Shield energised to " + str(shieldEnergy))
+        time.sleep(2)
+        clears()
+        strpt()
 
     else:
         clears()
