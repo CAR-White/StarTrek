@@ -17,13 +17,20 @@ Sprob=15                    # Probability of Universe cord having a space statio
 Wprob=5                     # Probability of Universe cord having a worm hole (5)
 srsRange = 3                # Short range scan range
 
-# Variable initilisation
-K_inUniverse = 0;           # Number of Klingons in universe
-S_inUniverse = 0;	    # Space Stations in universe
 
-# Global variables initilisation
+# Globals - variables initilisation
 
-# Initial status flags
+K_inUniverse = 0            # Number of Klingons in universe
+S_inUniverse = 0	    # Space Stations in universe
+K_inSector = 0
+S_inSector = 0
+W_inSector = 0
+
+starDate = 1000
+shieldEnergy = 0                  # Maximum = 99
+phaserEnergy = 0                  # Maxumul = 50
+
+# Globals - initial status flags
 srsFlag = 1
 lrsFlag = 1
 squadFlag = 1
@@ -31,11 +38,6 @@ phaserFlag = 1
 ptFlag = 1
 warpFlag = 1
 impulseFlag = 1
-
-
-starDate = 1000
-shieldEnergy = 0                  # Maximum = 99
-phaserEnergy = 0                  # Maxumul = 50
 
 
 # Functions
@@ -52,8 +54,8 @@ def lines(nl):
         print("")
     return
 
-def energiseAnotation():
-    for i in range(10):
+def delayAnotation(n):
+    for i in range(n):
         print(".", end="")
         time.sleep(0.25)
         i +=i
@@ -67,9 +69,10 @@ def rand(n):
 # ssx, ssy :- Short Range Scan cords
 def srs_noprint():
     global ex, ey
-    K_inSector = 0;
-    S_inSector = 0;
-    W_inSector = 0;
+    global K_inSector, S_inSector, W_inSector
+    K_inSector = 0
+    S_inSector = 0
+    w_inSector = 0
 
     for ssx in range(ex-srsRange, ex+srsRange):
        for ssy in range(ey-srsRange, ey+srsRange):
@@ -87,9 +90,10 @@ def srs_noprint():
 # ssx, ssy :- Short Range Scan cords
 def srs():
     global energy, ex, ey
-    K_inSector = 0;
-    S_inSector = 0;
-    W_inSector = 0;
+    global K_inSector, S_inSector, W_inSector
+    K_inSector = 0
+    S_inSector = 0
+    w_inSector = 0
     energy -=1
 
     if srsFlag <=0:
@@ -142,8 +146,10 @@ def impulse(direction, power):
     eOy = ey
     if (direction < 1 or direction > 8):
         print("Direction value out of range")
+        print("position unchanged")
     elif  (power < 1 or power > 3):
         print("Power value out of range")
+        print("position unchanged")
     else:
         if direction == 1:
             ex = ex - power
@@ -171,20 +177,63 @@ def impulse(direction, power):
             ey = ey - power
         else:
             #Should never get here
-            print("Toto, this shue aint Kansus")
+            print("Toto, this shue ain't Kansus")
+
+        print("")
+        print("------------------------------------------------------------------------")
+        print("Impulse power = " + str(pd[0]), "direction = " + str(pd[1]) + " ")
+        delayAnotation(6)
+        print("")
+        print("New Cordinates = " + str(ex) + ":" + str(ey))
+        print("------------------------------------------------------------------------")
+        print("")
+
 
     if Universe[ex][ey] == "K":
         print("You have collided with a Klingon and suffered damage")
+        print("------------------------------------------------------------------------")
+        print("")
         K_inUniverse -= 1
-        # To-do: Add damage
-
-
-
+        # To-do: Add damage(2)
+        time.sleep(4)
+    elif Universe[ex][ey] == "S":
+        print("You have collided with a Space Station")
+        print("The Space Station returned fire and caused you major damage")
+        print("but you manage to retrete to your original position")
+        print("------------------------------------------------------------------------")
+        print("")
+        # To-do: Add damage(3)
+        time.sleep(4)
+        # Enterprise does not move to new location
+        ex = eOx
+        ey = eOy
+    elif Universe[ex][ey] == "W":
+        print("You have entered a wormhole")
+        # To-do: Add damage(3)
+        time.sleep(4)
+        # Enterprise moves to new random location
+        ex = random.randint(srsRange, universeSize-srsRange)
+        ey = random.randint(srsRange, universeSize-srsRange)
+        if Universe[ex][ey] == "K":
+            print("You have collided with a Klingon and suffered damage")
+            print("------------------------------------------------------------------------")
+            print("")
+            K_inUniverse -= 1
+            # To-do: Add damage(2)
+            time.sleep(4)
+        elif Universe[ex][ey] == "S":
+            print("You have collided with a Space Station")
+            print("The Space Station returned fire and caused you major damage")
+            print("but you manage to retrete to your original position")
+            print("------------------------------------------------------------------------")
+            print("")
+            # To-do: Add damage(3)
+            time.sleep(4)
+            # Enterprise does not move to new location
+            ex = eOx
+            ey = eOy
 
     Universe[ex][ey] = "E"
-    #return
-
-
 
 
 # Status report
@@ -241,11 +290,69 @@ def strpt():
 
     #print("Klingons in sector: " + str(K_inSector))
     print("Klingons in universe: " + str(K_inUniverse))
-    print("Space Stations in universe: " + str(S_inUniverse))
+    print("SpacphaserEnergye Stations in universe: " + str(S_inUniverse))
     #printf("Saved Quadrants: Q0: K=%2d S=%2d W=%2d   Q1: K=%2d S=%2d W=%2d\n", ssK[0], ssS[0], ssW[0], ssK[1], ssS[1], ssW[1]);
     #printf("                 Q2: K=%2d S=%2d W=%2d   Q3: K=%2d S=%2d W=%2d\n\n", ssK[2], ssS[2], ssW[2], ssK[3], ssS[3], ssW[3]);
     print("")
 
+#Fire Phasers
+def fphaser(direction, power):
+    print("Firing phasers, direction = " + str(direction) + ", power = " + str(direction))
+    global phaserFlag
+    global phaserEnergy
+    global K_inSector
+    global K_inUniverse
+    global shieldEnergy
+    
+    if direction==1:
+        x = ex - power
+        y = ey
+    elif direction==2:
+        x = ex - power
+        y = ey + power
+    elif direction==3:
+        x = ex
+        y = ey + power
+    elif direction==4:
+        x = ex + power
+        y = ey + power
+    elif direction==5:
+        x = ex + power
+        y = ey
+    elif direction==6:
+        x = ex + power
+        y = ey - power
+    elif direction==7:
+        x = ex
+        y = ey - power
+    elif direction==8:
+        x = ex - power
+        y = ey - power
+    else:
+        print("DEBUG aprox line 343")
+        
+    if Universe[x][y] == 'K':
+        Universe[x][y] = '-'
+        K_inUniverse -= 1
+        K_inSector -= 1
+        shieldEnergy = shieldEnergy - K_inSector
+        #clears()
+        print("Klingon destroyed")
+        #damage(1)
+    elif Universe[x][y] == 'S':
+        Universe[x][y] = 'X'
+        clears();
+        print("You have attacked and severly damages a Space Station.")
+        print("The Space Station is badly damaged but manages to return fire.")
+        print("You better run away before the Space Police catch you.")
+        #damage(5)
+    else:
+        #clears()
+        print("\nYou missed!!\n")
+        shieldEnergy = shieldEnergy -  2*K_inSector
+        #clears()
+        print("\nKlingons attack.\n")
+        #damage(2)
 
 # Game introduction
 def intro():
@@ -296,8 +403,6 @@ for ux in range(0, universeSize):
 # be closer to the edge by less than one short range scan.
 ex = random.randint(srsRange, universeSize-srsRange)
 ey = random.randint(srsRange, universeSize-srsRange)
-#ex = 0
-#ey = 0
 
 # decrement K/S count in case the Enterprise removes one
 if Universe[ex][ey] == "K":
@@ -307,7 +412,7 @@ if Universe[ex][ey] == "S":
 
 Universe[ex][ey] = "E"
 
-# max_energy is more comples than this. See original C code
+# max_energy is more complex than this. See original C code
 max_starDate = K_inUniverse * 18
 
 max_pt = int(K_inUniverse/15)
@@ -323,7 +428,7 @@ clears()
 #ins()
 strpt()
 
-command=" "
+command=""
 while command != "ex":
 
     if (starDate > max_starDate):
@@ -336,7 +441,13 @@ while command != "ex":
         clears()
         print("\nNo energy available")
         break
-
+    
+    srs_noprint()
+    print("")
+    print("------------------------------------------------------------------------")
+    print("Position = " + str(ex) + ":" + str(ey))
+    print("------------------------------------------------------------------------")
+    print("")
     print("Commands: srs, lrs, imp, wrp, wrq, sq, phr, pht, es, ep, str, ins, rep, help, ex.");
     command=input("Input command: ")
     if command=="srs":
@@ -347,11 +458,21 @@ while command != "ex":
         lrs()
     elif command=="imp":
         pd=input("Input [[Direction(1-8)][Power(1-3)]: ")
-        impulsePower=int(pd[0])
-        impulseDirection=int(pd[1])
-        impulse(impulsePower, impulseDirection)
-        #print("PD = " + str(p) + str(d))
-        starDate = starDate + impulsePower
+        clears()
+        try:
+            impulsePower=int(pd[0])
+            impulseDirection=int(pd[1])
+            impulse(impulsePower, impulseDirection)
+            starDate = starDate + impulsePower
+        except:
+            clears()
+            print("")
+            print("------------------------------------------------------------------------")
+            print("Direction & power must be integer numbers")
+            print("Direction is the number 1 to 8 as shown in the Short Range Scan")
+            print("Power is the number 1 to 3 and determins the number of units travelled")
+            print("------------------------------------------------------------------------")
+            print("")
     elif command=="wrp":
         pd=input("Input [Power(0-9)][Direction(1-8)]: ")
         warpPower=int(pd[0])
@@ -360,13 +481,29 @@ while command != "ex":
     elif command=="str":
         clears()
         strpt()
+    elif command=="phr":
+        pd=input("Input [[Direction(1-8)][Power(1-3)]: ")
+        clears()
+        try:
+            Power=int(pd[0])
+            Direction=int(pd[1])
+            fphaser(Power, Direction)
+        except:
+            clears()
+            print("")
+            print("------------------------------------------------------------------------")
+            print("Direction & power must be integer numbers")
+            print("Direction is the number 1 to 8 as shown in the Short Range Scan")
+            print("Power is the number 1 to 3 and determins the number of units travelled")
+            print("------------------------------------------------------------------------")
+            print("")
     elif command == "es":
         print("Input Energy: ", end = "")
         e = int(input())
         energy = energy - e
         shieldEnergy = shieldEnergy + e
         print("Energising shields ", end="")
-        energiseAnotation()
+        delayAnotation(5)
         if shieldEnergy > 99:
             energy = energy + shieldEnergy - 99
             shieldEnergy = 99
@@ -382,7 +519,7 @@ while command != "ex":
         energy = energy - e
         phaserEnergy = phaserEnergy + e
         print("Energising phasers ", end="")
-        energiseAnotation()
+        delayAnotation(5)
         if phaserEnergy > 50:
             energy = energy + phaserEnergy - 50
             phaserEnergy = 50
@@ -392,10 +529,6 @@ while command != "ex":
         time.sleep(2.5)
         clears()
         strpt()
-
-
-
-
     else:
         clears()
         print("srs    	- Short Range Scan.")
@@ -418,10 +551,6 @@ while command != "ex":
         print("A 0 used in any command parameter (except Warp power 0 which")
         print("represents Warp Factor 10) results in the command being aborted")
         lines(1)
-
-
-
-
 
 print("Gane Over")
 
