@@ -73,12 +73,12 @@ def srs_noprint():
     global K_inSector, S_inSector, W_inSector
     K_inSector = 0
     S_inSector = 0
-    w_inSector = 0
+    W_inSector = 0
 
     for ssx in range(ex-srsRange, ex+srsRange):
-       for ssy in range(ey-srsRange, ey+srsRange):
-          # To-do need to sort out issue when Enterprise is at edge of universe
-          #  if ( ssx>0 and ssx<universeSize and ssy>0 and ssy<universeSize):
+        for ssy in range(ey-srsRange, ey+srsRange):
+                # To-do need to sort out issue when Enterprise is at edge of universe
+                #  if ( ssx>0 and ssx<universeSize and ssy>0 and ssy<universeSize):
                 if (Universe[ssx][ssy] == "K"):
                     K_inSector +=1
                 elif (Universe[ssx][ssy] == "S"):
@@ -94,7 +94,7 @@ def srs():
     global K_inSector, S_inSector, W_inSector
     K_inSector = 0
     S_inSector = 0
-    w_inSector = 0
+    W_inSector = 0
     energy -=1
 
     if srsFlag <=0:
