@@ -4,6 +4,7 @@
 # def ins()
 #_Date
 # need to sort out issue when Enterprise is at edge of universe
+# Added tl LiClpse project
 
 
 #Modules
@@ -54,10 +55,10 @@ def lines(nl):
         print("")
     return
 
-def delayAnotation(n):
+def delayAnotation(n, d=0.25):
     for i in range(n):
         print(".", end="")
-        time.sleep(0.25)
+        time.sleep(d)
         i +=i
     time.sleep(2)
 
@@ -265,7 +266,7 @@ def strpt():
     if (lrsFlag > 0):
         print("LRS operational")
     else:
-        printf("LRS unavailable")
+        print("LRS unavailable")
     if (squadFlag > 0):
         print("Save Quadrant operational")
     else:
